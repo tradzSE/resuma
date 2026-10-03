@@ -75,3 +75,20 @@ export const emptyEducation = (): Education => ({ id: createId(), school: "", de
 export const emptyExperience = (): Experience => ({ id: createId(), organization: "", role: "", location: "", startDate: "", endDate: "", bullets: "" });
 export const emptyProject = (): Project => ({ id: createId(), name: "", link: "", technologies: "", bullets: "" });
 export const emptyCertification = (): Certification => ({ id: createId(), name: "", issuer: "", date: "" });
+
+export const sampleResume: ResumeData = {
+  contact: {
+    fullName: "Maria Santos",
+    email: "maria.santos@email.com",
+    phone: "+63 917 123 4567",
+    location: "Quezon City, Philippines",
+    linkedin: "linkedin.com/in/mariasantos",
+    portfolio: "mariasantos.dev",
+  },
+  summary: "Software engineering graduate focused on building reliable, user-friendly web applications. Experienced in React, Node.js, and MySQL through internships and academic projects.",
+  education: [{ id: "education-sample", school: "Central Luzon State University", degree: "BS Information Technology", location: "Nueva Ecija, Philippines", startDate: "2022", endDate: "2026", details: "Relevant coursework: Software Engineering, Database Systems" }],
+  experience: [{ id: "experience-sample", organization: "Acme Technologies", role: "Software Engineering Intern", location: "Makati City", startDate: "Jun 2025", endDate: "Sep 2025", bullets: "Improved processing time by 30% through workflow automation.\nAssisted in testing and documenting internal tools." }],
+  projects: [{ id: "project-sample", name: "Campus Navigation App", link: "project.example.com", technologies: "React, Node.js, MySQL", bullets: "Built and deployed a responsive application used by 500 students.\nImplemented search and bookmark features." }],
+  skills: "Languages: JavaScript, TypeScript, PHP\nFrameworks: React, Next.js, Node.js",
+  certifications: [{ id: "certification-sample", name: "Computer Systems Servicing NC II", issuer: "TESDA", date: "June 2025" }],
+};

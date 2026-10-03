@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
+  createId,
   defaultResume,
   emptyCertification,
   emptyEducation,
   emptyExperience,
   emptyProject,
+  sampleResume,
   type Certification,
   type Education,
   type Experience,
@@ -168,6 +170,10 @@ export default function ResumeBuilder() {
     });
   };
   const exportDocx = async () => {
+    if (isResumeEmpty(data)) {
+      window.alert("Add at least one detail before exporting — for example your name or one experience entry.");
+      return;
+    }
     const { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle } = await import("docx");
     const children: InstanceType<typeof Paragraph>[] = [];
     const heading = (text: string) => new Paragraph({
@@ -205,6 +211,10 @@ export default function ResumeBuilder() {
 
   const exportPdf = async () => {
     if (!previewRef.current || exportingPdf) return;
+    if (isResumeEmpty(data)) {
+      window.alert("Add at least one detail before exporting — for example your name or one experience entry.");
+      return;
+    }
     setExportingPdf(true);
     const paper = previewRef.current;
     const previousZoom = paper.style.getPropertyValue("--preview-zoom");
@@ -223,13 +233,24 @@ export default function ResumeBuilder() {
   };
 
   const resetResume = () => {
-    if (window.confirm("Clear every field and start with a blank resume?")) setData(defaultResume);
+    if (window.confirm("Clear the editor and start with a blank resume? Files you already exported stay where you saved them.")) setData(defaultResume);
+  };
+
+  const loadSample = () => {
+    if (!window.confirm("Replace the current draft with sample content? This overwrites what is in the editor.")) return;
+    setData({ ...sampleResume, education: sampleResume.education.map((item) => ({ ...item, id: createId() })), experience: sampleResume.experience.map((item) => ({ ...item, id: createId() })), projects: sampleResume.projects.map((item) => ({ ...item, id: createId() })), certifications: sampleResume.certifications.map((item) => ({ ...item, id: createId() })) });
+  };
+
+  const isResumeEmpty = (resume: ResumeData) => {
+    const contactFilled = Object.values(resume.contact).some((value) => value.trim());
+    const listFilled = [...resume.education, ...resume.experience, ...resume.projects, ...resume.certifications].some((item) => Object.values(item).some((value) => typeof value === "string" && value.trim()));
+    return !contactFilled && !resume.summary.trim() && !resume.skills.trim() && !listFilled;
   };
 
   return <div className="builder-shell">
     <header className="app-header">
       <div className="brand-lockup"><div className="brand-copy"><Link href="/" className="brand">Resuma</Link><span>Professional resume workspace</span></div><span className={saved ? "save-status visible" : "save-status"}>Saved locally</span></div>
-      <div className="header-actions"><button type="button" className="button secondary" onClick={resetResume}>Reset</button><button type="button" className="button secondary" onClick={exportDocx}>Download DOCX</button><button type="button" className="button primary" onClick={exportPdf} disabled={exportingPdf}>{exportingPdf ? "Preparing PDF" : "Download PDF"}</button></div>
+      <div className="header-actions"><button type="button" className="button secondary" onClick={resetResume}>Reset</button><button type="button" className="button secondary" onClick={loadSample}>Load sample</button><button type="button" className="button secondary" onClick={exportDocx}>Download DOCX</button><button type="button" className="button primary" onClick={exportPdf} disabled={exportingPdf}>{exportingPdf ? "Preparing PDF" : "Download PDF"}</button></div>
     </header>
     <div className="workspace-bar">
       <nav className="workspace-tabs" aria-label="Resume categories">

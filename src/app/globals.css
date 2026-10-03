@@ -230,7 +230,7 @@ button, summary { -webkit-tap-highlight-color: transparent; }
   .editor-panel { padding: 18px 16px 58px; }
   .two-fields { grid-template-columns: 1fr; }
   .paper-stage { padding: 14px 8px 34px; }
-  .resume-paper { zoom: .43; }
+  .resume-paper { zoom: .5; }
   .preview-toolbar { padding-inline: 10px; }
   .preview-toolbar > span { display: none; }
   .preview-controls { width: 100%; justify-content: space-between; gap: 8px; }
