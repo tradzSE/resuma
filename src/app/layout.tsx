@@ -11,20 +11,36 @@ export const viewport: Viewport = { themeColor: "#f2f0e9", width: "device-width"
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: "Resuma | Build your resume.", template: "%s | Resuma" },
-  description: "Build a clear professional resume with a live preview, local autosave, and direct PDF export. No account required.",
+  title: { default: "Free Resume Builder with Live Preview | Resuma", template: "%s | Resuma" },
+  description: "Create a professional resume with live preview, local autosave, flexible formatting, and direct PDF export. Free and no account required.",
   applicationName: "Resuma",
   authors: [{ name: "Ranier Teraldico", url: "https://ranierteraldico.me" }],
   creator: "Ranier Teraldico",
   keywords: ["resume builder", "free resume builder", "CV maker", "resume PDF", "live resume preview"],
   alternates: { canonical: "/" },
-  openGraph: { type: "website", url: "/", siteName: "Resuma", title: "Resuma | Build your resume.", description: "Write, preview, and export a professional resume without creating an account.", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Resuma — write your resume and see the final page" }] },
-  twitter: { card: "summary_large_image", title: "Resuma | Build your resume.", description: "Write, preview, and export a professional resume without creating an account.", images: ["/opengraph-image"] },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Resuma",
+    title: "Free Resume Builder with Live Preview | Resuma",
+    description: "Create, preview, and export a professional resume for free without creating an account.",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Resuma — free resume builder with live preview" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Free Resume Builder with Live Preview | Resuma",
+    description: "Create, preview, and export a professional resume for free without creating an account.",
+    images: ["/opengraph-image"],
+  },
   robots: { index: true, follow: true },
   icons: {
-    icon: [{ url: "/images/resume-icon.ico" }, { url: "/favicon.ico", sizes: "any" }],
-    shortcut: "/images/resume-icon.ico",
-    apple: [{ url: "/images/resume-icon.ico" }],
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-48x48.png", type: "image/png", sizes: "48x48" },
+      { url: "/favicon-96x96.png", type: "image/png", sizes: "96x96" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [{ url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" }],
   },
 };
 

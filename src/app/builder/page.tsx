@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import ResumeBuilder from "@/components/ResumeBuilder";
 
 export const metadata: Metadata = {
-  title: "Builder",
-  description: "Create, preview, and export a clear professional resume with Resuma.",
+  title: "Free Resume Builder",
+  description: "Build a professional resume with a live preview, flexible formatting, local autosave, and direct PDF export.",
   alternates: { canonical: "/builder" },
 };
 

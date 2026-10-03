@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import InfoPage from "@/components/InfoPage";
 
-export const metadata: Metadata = { title: "About", description: "Learn why Resuma was created and how its focused resume-building workflow works.", alternates: { canonical: "/about" } };
+export const metadata: Metadata = { title: "About the Free Resume Builder", description: "Learn how Resuma helps students and professionals create, preview, and export a polished resume for free.", alternates: { canonical: "/about" } };
 
 export default function AboutPage() {
   return <InfoPage title="About Resuma" introduction="A focused workspace for writing, reviewing, and exporting a professional resume." sections={[
