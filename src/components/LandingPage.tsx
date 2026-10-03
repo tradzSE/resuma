@@ -32,10 +32,6 @@ export default function LandingPage() {
     <main ref={root} className="landing-page">
       <header className="landing-header" data-enter>
         <Link href="/" className="landing-wordmark">Resuma</Link>
-        <nav aria-label="Primary navigation">
-          <Link href="/about">About</Link>
-          <Link href="/privacy">Privacy</Link>
-        </nav>
       </header>
 
       <section className="landing-introduction" aria-labelledby="landing-title">
@@ -63,6 +59,7 @@ export default function LandingPage() {
           <Link href="/about">About</Link>
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>
+          <a href="https://ranierteraldico.me" target="_blank" rel="noopener noreferrer">Portfolio</a>
         </nav>
       </footer>
     </main>

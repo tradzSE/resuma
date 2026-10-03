@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   openGraph: { type: "website", url: "/", siteName: "Resuma", title: "Resuma | Build your resume.", description: "Write, preview, and export a professional resume without creating an account.", images: [{ url: "/images/hero.png", width: 1536, height: 1024, alt: "The Resuma resume editor and live document preview" }] },
   twitter: { card: "summary_large_image", title: "Resuma | Build your resume.", description: "Write, preview, and export a professional resume without creating an account.", images: ["/images/hero.png"] },
   robots: { index: true, follow: true },
+  icons: {
+    icon: [{ url: "/images/resume-icon.ico" }, { url: "/favicon.ico", sizes: "any" }],
+    shortcut: "/images/resume-icon.ico",
+    apple: [{ url: "/images/resume-icon.ico" }],
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
