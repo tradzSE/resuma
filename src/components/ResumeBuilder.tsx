@@ -58,12 +58,27 @@ const exportFileName = (fullName: string) => {
   return `${nameParts[0]}_${nameParts[nameParts.length - 1]}_Resume`;
 };
 
-function Field({ label, value, onChange, placeholder = "", type = "text" }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; type?: string }) {
-  return <label className="field"><span>{label}</span><input type={type} value={value} placeholder={placeholder || fieldPlaceholders[label] || ""} onChange={(event) => onChange(event.target.value)} /></label>;
+const fieldMeta: Record<string, { type?: string; autoComplete?: string; inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"] }> = {
+  "Full name": { autoComplete: "name" },
+  Location: { autoComplete: "address-level2" },
+  Email: { type: "email", autoComplete: "email", inputMode: "email" },
+  Phone: { type: "tel", autoComplete: "tel", inputMode: "tel" },
+  LinkedIn: { type: "url", autoComplete: "url", inputMode: "url" },
+  Portfolio: { type: "url", autoComplete: "url", inputMode: "url" },
+  Link: { type: "url", autoComplete: "off", inputMode: "url" },
+  Organization: { autoComplete: "organization" },
+  Role: { autoComplete: "organization-title" },
+};
+
+function Field({ label, value, onChange, placeholder = "", type }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; type?: string }) {
+  const metadata = fieldMeta[label] ?? {};
+  const inputType = type ?? metadata.type ?? "text";
+  const fieldName = label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  return <label className="field"><span>{label}</span><input name={fieldName} type={inputType} inputMode={metadata.inputMode} autoComplete={metadata.autoComplete ?? "off"} spellCheck={inputType !== "email" && inputType !== "url"} value={value} placeholder={placeholder || fieldPlaceholders[label] || ""} onChange={(event) => onChange(event.target.value)} /></label>;
 }
 
 function TextArea({ label, value, onChange, placeholder = "", rows = 4 }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; rows?: number }) {
-  return <label className="field"><span>{label}</span><textarea value={value} placeholder={placeholder || textAreaPlaceholders[label] || ""} rows={rows} onChange={(event) => onChange(event.target.value)} /></label>;
+  return <label className="field"><span>{label}</span><textarea name={label.toLowerCase().replace(/[^a-z0-9]+/g, "-")} autoComplete="off" value={value} placeholder={placeholder || textAreaPlaceholders[label] || ""} rows={rows} onChange={(event) => onChange(event.target.value)} /></label>;
 }
 
 function EditorSection({ id, title, description, children, active }: { id: string; title: string; description: string; children: React.ReactNode; active: boolean }) {
@@ -116,7 +131,10 @@ export default function ResumeBuilder() {
   const [titleColor, setTitleColor] = useState("#111111");
   const [exportingPdf, setExportingPdf] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"reset" | "sample" | "empty" | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
+  const mobileActionsRef = useRef<HTMLDetailsElement>(null);
   const hasMounted = useRef(false);
 
   useEffect(() => {
@@ -156,6 +174,32 @@ export default function ResumeBuilder() {
     };
   }, [data]);
 
+  useEffect(() => {
+    if (!pendingAction) return;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    dialogRef.current?.focus();
+    const closeDialog = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setPendingAction(null);
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter((element) => !element.hasAttribute("disabled"));
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    window.addEventListener("keydown", closeDialog);
+    return () => {
+      window.removeEventListener("keydown", closeDialog);
+      previousFocus?.focus();
+    };
+  }, [pendingAction]);
+
+  const requestAction = (action: "reset" | "sample") => {
+    mobileActionsRef.current?.removeAttribute("open");
+    setPendingAction(action);
+  };
+
   const updateContact = (key: keyof ResumeData["contact"], value: string) => setData((current) => ({ ...current, contact: { ...current.contact, [key]: value } }));
   const updateList = <T extends { id: string }>(key: "education" | "experience" | "projects" | "certifications", id: string, patch: Partial<T>) => setData((current) => ({ ...current, [key]: (current[key] as unknown as T[]).map((item) => item.id === id ? { ...item, ...patch } : item) }));
   const removeItem = (key: "education" | "experience" | "projects" | "certifications", id: string) => setData((current) => ({ ...current, [key]: current[key].filter((item) => item.id !== id) }));
@@ -169,50 +213,10 @@ export default function ResumeBuilder() {
       return { ...current, [list]: items };
     });
   };
-  const exportDocx = async () => {
-    if (isResumeEmpty(data)) {
-      window.alert("Add at least one detail before exporting — for example your name or one experience entry.");
-      return;
-    }
-    const { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle } = await import("docx");
-    const children: InstanceType<typeof Paragraph>[] = [];
-    const heading = (text: string) => new Paragraph({
-      alignment: documentStyle === "centered" ? AlignmentType.CENTER : AlignmentType.LEFT,
-      children: [new TextRun({ text: text.toUpperCase(), bold: true, color: titleColor.slice(1) })],
-      border: { bottom: { color: "000000", style: BorderStyle.SINGLE, size: 6 } },
-      spacing: { before: 180, after: 70 },
-    });
-    const entry = (title: string, subtitle: string, meta: string, bullets: string[] = []) => {
-      children.push(new Paragraph({ children: [new TextRun({ text: title, bold: true }), new TextRun({ text: meta ? `\t${meta}` : "" })], tabStops: [{ type: "right", position: 9360 }] }));
-      if (subtitle) children.push(new Paragraph({ children: [new TextRun({ text: subtitle, italics: true })] }));
-      bullets.forEach((bullet) => children.push(new Paragraph({ text: bullet, bullet: { level: 0 } })));
-    };
-
-    children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 30 }, children: [new TextRun({ text: data.contact.fullName.toUpperCase(), bold: true, size: 36, color: titleColor.slice(1) })] }));
-    children.push(new Paragraph({ alignment: AlignmentType.CENTER, text: [data.contact.email, data.contact.phone, data.contact.location, data.contact.linkedin, data.contact.portfolio].filter(Boolean).join(" | ") }));
-    if (data.summary.trim()) { children.push(heading("Professional Summary"), new Paragraph(data.summary)); }
-    if (data.education.length) { children.push(heading("Education")); data.education.forEach((item) => entry(item.school, item.degree, [item.location, [item.startDate, item.endDate].filter(Boolean).join(" – ")].filter(Boolean).join(" | "), item.details ? [item.details] : [])); }
-    if (data.experience.length) { children.push(heading("Experience")); data.experience.forEach((item) => entry(item.organization, item.role, [item.location, [item.startDate, item.endDate].filter(Boolean).join(" – ")].filter(Boolean).join(" | "), splitLines(item.bullets))); }
-    if (data.projects.length) { children.push(heading("Projects")); data.projects.forEach((item) => entry(item.name, [item.technologies, item.link].filter(Boolean).join(" | "), "", splitLines(item.bullets))); }
-    if (data.skills.trim()) { children.push(heading("Skills")); splitLines(data.skills).forEach((line) => children.push(new Paragraph(line))); }
-    if (data.certifications.length) { children.push(heading("Certifications")); data.certifications.forEach((item) => entry(item.name, item.issuer, item.date)); }
-
-    const docxDocument = new Document({
-      styles: { default: { document: { run: { font: "Times New Roman", size: resumeFontSize * 2 } } } },
-      sections: [{ properties: { page: { margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 } } }, children }],
-    });
-    const blob = await Packer.toBlob(docxDocument);
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `${exportFileName(data.contact.fullName)}.docx`;
-    link.click();
-    URL.revokeObjectURL(link.href);
-  };
-
   const exportPdf = async () => {
     if (!previewRef.current || exportingPdf) return;
     if (isResumeEmpty(data)) {
-      window.alert("Add at least one detail before exporting — for example your name or one experience entry.");
+      setPendingAction("empty");
       return;
     }
     setExportingPdf(true);
@@ -232,13 +236,10 @@ export default function ResumeBuilder() {
     }
   };
 
-  const resetResume = () => {
-    if (window.confirm("Clear the editor and start with a blank resume? Files you already exported stay where you saved them.")) setData(defaultResume);
-  };
-
-  const loadSample = () => {
-    if (!window.confirm("Replace the current draft with sample content? This overwrites what is in the editor.")) return;
-    setData({ ...sampleResume, education: sampleResume.education.map((item) => ({ ...item, id: createId() })), experience: sampleResume.experience.map((item) => ({ ...item, id: createId() })), projects: sampleResume.projects.map((item) => ({ ...item, id: createId() })), certifications: sampleResume.certifications.map((item) => ({ ...item, id: createId() })) });
+  const confirmPendingAction = () => {
+    if (pendingAction === "reset") setData(defaultResume);
+    if (pendingAction === "sample") setData({ ...sampleResume, education: sampleResume.education.map((item) => ({ ...item, id: createId() })), experience: sampleResume.experience.map((item) => ({ ...item, id: createId() })), projects: sampleResume.projects.map((item) => ({ ...item, id: createId() })), certifications: sampleResume.certifications.map((item) => ({ ...item, id: createId() })) });
+    setPendingAction(null);
   };
 
   const isResumeEmpty = (resume: ResumeData) => {
@@ -248,9 +249,10 @@ export default function ResumeBuilder() {
   };
 
   return <div className="builder-shell">
+    <a className="skip-link" href="#main">Skip to resume editor</a>
     <header className="app-header">
-      <div className="brand-lockup"><div className="brand-copy"><Link href="/" className="brand">Resuma</Link><span>Professional resume workspace</span></div><span className={saved ? "save-status visible" : "save-status"}>Saved locally</span></div>
-      <div className="header-actions"><button type="button" className="button secondary" onClick={resetResume}>Reset</button><button type="button" className="button secondary" onClick={loadSample}>Load sample</button><button type="button" className="button secondary" onClick={exportDocx}>Download DOCX</button><button type="button" className="button primary" onClick={exportPdf} disabled={exportingPdf}>{exportingPdf ? "Preparing PDF" : "Download PDF"}</button></div>
+      <div className="brand-lockup"><div className="brand-copy"><Link href="/" className="brand" translate="no">Resuma</Link><span>Professional resume workspace</span></div><span className={saved ? "save-status visible" : "save-status"} role="status" aria-live="polite">Saved locally</span></div>
+      <div className="header-actions"><button type="button" className="button secondary" onClick={() => requestAction("reset")}>Reset</button><button type="button" className="button secondary" onClick={() => requestAction("sample")}>Load sample</button><details className="mobile-actions" ref={mobileActionsRef}><summary aria-label="Open resume actions">Actions</summary><div><button type="button" onClick={() => requestAction("sample")}>Load Sample</button><button type="button" onClick={() => requestAction("reset")}>Reset Resume</button></div></details><button type="button" className="button primary" onClick={exportPdf} disabled={exportingPdf}>{exportingPdf ? "Preparing PDF…" : "Download PDF"}</button></div>
     </header>
     <div className="workspace-bar">
       <nav className="workspace-tabs" aria-label="Resume categories">
@@ -287,5 +289,16 @@ export default function ResumeBuilder() {
       </section>
       <section className={`preview-panel ${mobileView !== "preview" ? "mobile-hidden" : ""}`} aria-label="Resume preview"><div className="paper-stage"><ResumePreview data={data} previewRef={previewRef} zoom={previewZoom} fontSize={resumeFontSize} documentStyle={documentStyle} titleColor={titleColor} /></div></section>
     </main>
+    {pendingAction && (
+      <div className="builder-dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setPendingAction(null); }}>
+        <section className="builder-dialog" ref={dialogRef} tabIndex={-1} role="alertdialog" aria-modal="true" aria-labelledby="builder-dialog-title" aria-describedby="builder-dialog-description">
+          <h2 id="builder-dialog-title">{pendingAction === "reset" ? "Start with a blank resume?" : pendingAction === "sample" ? "Load the sample resume?" : "Add something before exporting"}</h2>
+          <p id="builder-dialog-description">{pendingAction === "reset" ? "This clears every field in the editor. Files you already exported will not be affected." : pendingAction === "sample" ? "This replaces the current draft with sample content so you can explore the builder." : "Enter at least your name or one resume entry, then download the PDF again."}</p>
+          <div className="builder-dialog-actions">
+            {pendingAction === "empty" ? <button type="button" className="button primary" onClick={() => setPendingAction(null)}>Continue Editing</button> : <><button type="button" className="button secondary" onClick={() => setPendingAction(null)}>Cancel</button><button type="button" className="button primary" onClick={confirmPendingAction}>{pendingAction === "reset" ? "Clear Resume" : "Load Sample"}</button></>}
+          </div>
+        </section>
+      </div>
+    )}
   </div>;
 }

@@ -7,7 +7,7 @@ A private, browser-based resume editor with a live Harvard-style preview.
 - Real-time resume preview
 - Contact, summary, education, experience, projects, skills, and certification sections
 - Local browser autosave
-- PDF printing and DOCX export
+- Direct PDF export
 - Desktop split view and mobile Edit/Preview tabs
 
 ## Development

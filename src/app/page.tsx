@@ -7,7 +7,7 @@ export default function Home() {
     name: "Resuma",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
-    description: "A free resume builder with live preview and PDF or DOCX export.",
+    description: "A free resume builder with live preview and direct PDF export.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     author: { "@type": "Person", name: "Ranier Teraldico", url: "https://ranierteraldico.me" },
   };
