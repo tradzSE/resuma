@@ -107,6 +107,19 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <section className="landing-showcase" aria-labelledby="showcase-title">
+        <div className="showcase-heading">
+          <h2 id="showcase-title">See the final page <em>as you write.</em></h2>
+        </div>
+        <div className="laptop" aria-label="Resuma builder shown on a laptop">
+          <div className="laptop-screen">
+            <span className="laptop-camera" aria-hidden="true" />
+            <Image src="/images/home-hero.png" alt="Resuma resume editor with a live document preview" width={1902} height={871} sizes="(max-width: 720px) 92vw, 1080px" />
+          </div>
+          <div className="laptop-base" aria-hidden="true"><span /></div>
+        </div>
+      </section>
+
       <footer className="landing-footer">
         <nav aria-label="Footer navigation">
           <Link href="/about">About</Link>
