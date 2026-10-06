@@ -1,7 +1,9 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Macbook } from "@/components/ui/animated-3d-mac-book-air";
 
 function BrandMark({ d, label }: { d: string; label: string }) {
   return (
@@ -34,26 +36,28 @@ const AVATARS = [
   "/avatars/avatar-4.svg",
 ];
 
-type Platform = { kind: "path"; name: string; d: string } | { kind: "image"; name: string; logo: string };
+type Platform = ({ kind: "path"; name: string; d: string } | { kind: "image"; name: string; logo: string }) & { color: string };
 
 const PLATFORMS: Platform[] = [
-  { kind: "path", name: "Indeed", d: INDEED_PATH },
-  { kind: "path", name: "Upwork", d: UPWORK_PATH },
-  { kind: "path", name: "Glassdoor", d: GLASSDOOR_PATH },
-  { kind: "path", name: "Wellfound", d: WELLFOUND_PATH },
-  { kind: "path", name: "Fiverr", d: FIVERR_PATH },
-  { kind: "path", name: "Monster", d: MONSTER_PATH },
-  { kind: "image", name: "JobStreet", logo: "/platforms/jobstreet.png" },
-  { kind: "image", name: "OnlineJobs.ph", logo: "/platforms/onlinejobs.ico" },
-  { kind: "image", name: "Kalibrr", logo: "/platforms/kalibrr.ico" },
-  { kind: "image", name: "LinkedIn", logo: "/platforms/linkedin.ico" },
+  { kind: "path", name: "Indeed", d: INDEED_PATH, color: "#2164f3" },
+  { kind: "path", name: "Upwork", d: UPWORK_PATH, color: "#14a800" },
+  { kind: "path", name: "Glassdoor", d: GLASSDOOR_PATH, color: "#0caa41" },
+  { kind: "path", name: "Wellfound", d: WELLFOUND_PATH, color: "#111111" },
+  { kind: "path", name: "Fiverr", d: FIVERR_PATH, color: "#1dbf73" },
+  { kind: "path", name: "Monster", d: MONSTER_PATH, color: "#6e46ae" },
+  { kind: "image", name: "JobStreet", logo: "/platforms/jobstreet.png", color: "#0b4ea2" },
+  { kind: "image", name: "OnlineJobs.ph", logo: "/platforms/onlinejobs.ico", color: "#1769aa" },
+  { kind: "image", name: "Kalibrr", logo: "/platforms/kalibrr.ico", color: "#ef4135" },
+  { kind: "image", name: "LinkedIn", logo: "/platforms/linkedin.ico", color: "#0a66c2" },
 ];
 
-function MarqueeGroup({ hidden = false }: { hidden?: boolean }) {
+function MarqueeGroup({ hidden = false, offset = 0 }: { hidden?: boolean; offset?: number }) {
+  const platforms = [...PLATFORMS.slice(offset), ...PLATFORMS.slice(0, offset)];
+
   return (
     <div className="marquee-group" aria-hidden={hidden || undefined}>
-      {PLATFORMS.map((platform) => (
-        <span className="marquee-item" key={platform.name}>
+      {platforms.map((platform) => (
+        <span className="marquee-item" key={platform.name} style={{ "--platform-color": platform.color } as CSSProperties}>
           {platform.kind === "path" ? <BrandMark d={platform.d} label={platform.name} /> : <Image className="marquee-logo" src={platform.logo} alt="" width={24} height={24} />}
           <span>{platform.name}</span>
         </span>
@@ -94,16 +98,19 @@ export default function LandingPage() {
       </section>
 
       <section className="landing-logos" aria-label="Platforms you can apply on with your resume">
-        <p className="marquee-label">
-          <span aria-hidden="true" />
-          Built for applications across leading job platforms
-          <span aria-hidden="true" />
-        </p>
-        <div className="marquee">
-          <div className="marquee-track">
-            <MarqueeGroup />
-            <MarqueeGroup hidden />
-          </div>
+        <div className="marquee-heading">
+          <h2>A resume ready for <em>where you apply.</em></h2>
+          <p>Export one clean PDF for the job platforms you already use.</p>
+        </div>
+        <div className="platform-wall" aria-hidden="true">
+          {[0, 5].map((offset, row) => (
+            <div className={`marquee ${row === 1 ? "marquee-reverse" : ""}`} key={offset}>
+              <div className="marquee-track">
+                <MarqueeGroup hidden offset={offset} />
+                <MarqueeGroup hidden offset={offset} />
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -111,13 +118,7 @@ export default function LandingPage() {
         <div className="showcase-heading">
           <h2 id="showcase-title">See the final page <em>as you write.</em></h2>
         </div>
-        <div className="laptop" aria-label="Resuma builder shown on a laptop">
-          <div className="laptop-screen">
-            <span className="laptop-camera" aria-hidden="true" />
-            <Image src="/images/home-hero.png" alt="Resuma resume editor with a live document preview" width={1902} height={871} sizes="(max-width: 720px) 92vw, 1080px" />
-          </div>
-          <div className="laptop-base" aria-hidden="true"><span /></div>
-        </div>
+        <Macbook screenImage="/images/home-hero.png" screenAlt="Laptop showing the Resuma editor and live resume preview" />
       </section>
 
       <footer className="landing-footer">
