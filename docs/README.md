@@ -9,7 +9,7 @@ This documentation describes the current implementation in the repository. The s
 - [Architecture](./ARCHITECTURE.md) — routes, component responsibilities, state flow, and structured metadata.
 - [Development and deployment](./DEVELOPMENT_AND_DEPLOYMENT.md) — prerequisites, commands, environment configuration, and production behavior.
 - [Privacy and limitations](./PRIVACY_AND_LIMITATIONS.md) — browser storage, exports, and current product constraints.
-- [Contributing and adding collaborators](./CONTRIBUTING.md) — GitHub repository access and a suggested contribution workflow.
+- [Contributing to Resuma](./CONTRIBUTING.md) — how to request access or contribute with a fork, and the code contribution workflow.
 
 ## Project summary
 
