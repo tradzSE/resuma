@@ -30,6 +30,8 @@ npm run start
 
 There is no test script configured in the current `package.json`.
 
+The master app icon is `public/favicon.svg`; raster icon variants are checked in alongside it. If the mark changes, regenerate the PNG and ICO variants together so browser tabs, shortcuts, and Apple touch icons stay consistent.
+
 ## Environment
 
 `NEXT_PUBLIC_SITE_URL` is optional. When unset, the application uses `https://resuma.ranierteraldico.me`. The value is read by the root layout, `src/app/robots.ts`, and `src/app/sitemap.ts`; use the deployed canonical origin when setting it for another deployment.
