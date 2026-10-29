@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://resuma.ranierteraldico.me";
@@ -46,5 +47,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" className={`${geist.variable} ${geistMono.variable}`}><body>{children}</body></html>;
+  return <html lang="en" className={`${geist.variable} ${geistMono.variable}`}><body>{children}<Analytics /></body></html>;
 }

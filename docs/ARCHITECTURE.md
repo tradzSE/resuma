@@ -49,6 +49,6 @@ The resume model is held in React state while editing. An effect writes it to `l
 
 ## Hosting and metadata
 
-The default public origin is `https://resuma.ranierteraldico.me`. `NEXT_PUBLIC_SITE_URL` can override the origin used by metadata, robots, and the sitemap. The root layout defines site metadata, Open Graph/Twitter cards, icons, and fonts. The landing page emits JSON-LD for `SoftwareApplication` and `WebSite`.
+The default public origin is `https://resuma.ranierteraldico.me`. `NEXT_PUBLIC_SITE_URL` can override the origin used by metadata, robots, and the sitemap. The root layout defines site metadata, Open Graph/Twitter cards, icons, fonts, and the Vercel Analytics component. The landing page emits JSON-LD for `SoftwareApplication` and `WebSite`.
 
 The app icon uses the black-and-white document mark with a lime fold: `public/favicon.svg` is the scalable source, with PNG variants for common browser and Apple touch-icon sizes. ICO variants are provided in `public/` and `src/app/` for browser and Next.js favicon handling. The browser theme color is set to near-black in the root layout.

@@ -6,6 +6,8 @@ The editor stores resume content and selected visual preferences in local storag
 
 Anyone with access to the same browser profile and site storage may be able to access the saved resume. Avoid using a shared or public browser for sensitive information, and clear the site's stored data when appropriate. Resetting the resume clears resume fields but does not clear the saved format or title color preferences.
 
+The site also loads Vercel Web Analytics to measure website usage. This is separate from resume storage: the application does not send the resume draft or its fields to Vercel Analytics. Review [Vercel's privacy policy](https://vercel.com/legal/privacy-policy) for details about its analytics service and data handling.
+
 ## PDF export
 
 PDF generation happens in the browser from the live preview. The current implementation captures the rendered document as an image and puts it on one portrait Letter page. It does not create selectable PDF text or paginate long content. Check legibility and completeness before using the exported file.
