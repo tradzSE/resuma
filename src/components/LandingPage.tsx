@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Macbook } from "@/components/ui/animated-3d-mac-book-air";
+import { CinematicHero } from "@/components/ui/cinematic-landing-hero";
 
 function BrandMark({ d, label }: { d: string; label: string }) {
   return (
@@ -134,6 +135,22 @@ export default function LandingPage() {
         </div>
         <PlatformFlow />
       </section>
+
+      <CinematicHero
+        brandName="Resuma"
+        tagline1="Craft the journey,"
+        tagline2="not just the pages."
+        cardHeading="Presentation, redefined."
+        cardDescription={
+          <>
+            <span className="text-white font-semibold">Resuma</span> equips job seekers and professionals with structured resume editing, real-time preview, and instant export ready for all major hiring platforms.
+          </>
+        }
+        metricValue={100}
+        metricLabel="% ATS Ready"
+        ctaHeading="Start your resume today."
+        ctaDescription="Join thousands of professionals crafting stand-out resumes and take control of your career today."
+      />
 
       <section className="landing-showcase" aria-labelledby="showcase-title">
         <div className="showcase-heading">

@@ -1,4 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
+  --background: 48 33% 97%;
+  --foreground: 75 4% 9%;
+  --color-foreground: #171816;
+  --muted-foreground: 70 3% 43%;
   --ink: #171816;
   --muted: #6f7069;
   --line: #d2d0c8;
@@ -354,7 +362,7 @@ button, summary { -webkit-tap-highlight-color: rgb(23 24 22 / .12); }
 .entry-line span { flex: none; font-size: .91em; }
 .entry-line em { font-size: .95em; line-height: 1.2; }
 .resume-entry p { margin: 3px 0 0; }
-.resume-entry ul { margin: 3px 0 0; padding-left: 17px; }
+.resume-entry ul { margin: 3px 0 0; padding-left: 17px; list-style-type: disc; }
 .resume-entry li { margin-top: 2px; padding-left: 1px; }
 .skills-lines p { margin: 2px 0; }
 .certification-row { display: flex; justify-content: space-between; gap: 20px; }
