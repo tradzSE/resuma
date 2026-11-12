@@ -7,7 +7,7 @@ import { Macbook } from "@/components/ui/animated-3d-mac-book-air";
 
 function BrandMark({ d, label }: { d: string; label: string }) {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
       <title>{label}</title>
       <path d={d} fill="currentColor" />
     </svg>
@@ -20,21 +20,6 @@ const GLASSDOOR_PATH = "M14.1093.0006c-.0749-.0074-.1348.0522-.1348.127v3.451c0 
 const WELLFOUND_PATH = "M23.998 8.128c.063-1.379-1.612-2.376-2.795-1.664-1.23.598-1.322 2.52-.156 3.234 1.2.862 2.995-.09 2.951-1.57zm0 7.748c.063-1.38-1.612-2.377-2.795-1.665-1.23.598-1.322 2.52-.156 3.234 1.2.863 2.995-.09 2.951-1.57zm-20.5 1.762L0 6.364h3.257l2.066 8.106 2.245-8.106h3.267l2.244 8.106 2.065-8.106h3.257l-3.54 11.274H11.39c-.73-2.713-1.46-5.426-2.188-8.14l-2.233 8.14H3.5z";
 const FIVERR_PATH = "M23.004 15.588a.995.995 0 1 0 .002-1.99.995.995 0 0 0-.002 1.99zm-.996-3.705h-.85c-.546 0-.84.41-.84 1.092v2.466h-1.61v-3.558h-.684c-.547 0-.84.41-.84 1.092v2.466h-1.61v-4.874h1.61v.74c.264-.574.626-.74 1.163-.74h1.972v.74c.264-.574.625-.74 1.162-.74h.527v1.316zm-6.786 1.501h-3.359c.088.546.43.858 1.006.858.43 0 .732-.175.83-.487l1.425.4c-.351.848-1.22 1.364-2.255 1.364-1.748 0-2.549-1.355-2.549-2.515 0-1.14.703-2.505 2.45-2.505 1.856 0 2.471 1.384 2.471 2.408 0 .224-.01.37-.02.477zm-1.562-.945c-.04-.42-.342-.81-.889-.81-.508 0-.81.225-.908.81h1.797zM7.508 15.44h1.416l1.767-4.874h-1.62l-.86 2.837-.878-2.837H5.72l1.787 4.874zm-6.6 0H2.51v-3.558h1.524v3.558h1.591v-4.874H2.51v-.302c0-.332.235-.536.606-.536h.918V8.412H2.85c-1.162 0-1.943.712-1.943 1.755v.4H0v1.316h.908v3.558z";
 const MONSTER_PATH = "M0 0V24H5.42V12.39L12 18.19L18.58 12.39V24H24V0L12 11.23L0 0Z";
-
-function Star() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M12 2l2.94 6.26 6.56 1.01-4.75 4.63 1.12 6.6L12 17.27l-5.87 3.23 1.12-6.6L2.5 9.27l6.56-1.01L12 2z" fill="currentColor" />
-    </svg>
-  );
-}
-
-const AVATARS = [
-  "/avatars/avatar-1.svg",
-  "/avatars/avatar-2.svg",
-  "/avatars/avatar-3.svg",
-  "/avatars/avatar-4.svg",
-];
 
 type Platform = ({ kind: "path"; name: string; d: string } | { kind: "image"; name: string; logo: string }) & { color: string };
 
@@ -51,17 +36,85 @@ const PLATFORMS: Platform[] = [
   { kind: "image", name: "LinkedIn", logo: "/platforms/linkedin.ico", color: "#0a66c2" },
 ];
 
-function MarqueeGroup({ hidden = false, offset = 0 }: { hidden?: boolean; offset?: number }) {
-  const platforms = [...PLATFORMS.slice(offset), ...PLATFORMS.slice(0, offset)];
+function PlatformNode({ platform, index }: { platform: Platform; index: number }) {
+  return (
+    <li
+      className="platform-flow-node"
+      style={{
+        "--platform-color": platform.color,
+        "--platform-glow": `${platform.color}26`,
+        "--flow-delay": `${index * 0.12}s`,
+      } as CSSProperties}
+      title={platform.name}
+      aria-label={platform.name}
+    >
+      <div className="platform-flow-disc">
+        {platform.kind === "path" ? (
+          <BrandMark d={platform.d} label={platform.name} />
+        ) : (
+          <Image
+            className="platform-flow-logo"
+            src={platform.logo}
+            alt=""
+            width={26}
+            height={26}
+            loading="eager"
+          />
+        )}
+      </div>
+    </li>
+  );
+}
+
+function PlatformFlow() {
+  const leftPlatforms = PLATFORMS.slice(0, 5);
+  const rightPlatforms = PLATFORMS.slice(5);
+  const flowRows = [40, 120, 200, 280, 360];
 
   return (
-    <div className="marquee-group" aria-hidden={hidden || undefined}>
-      {platforms.map((platform) => (
-        <span className="marquee-item" key={platform.name} style={{ "--platform-color": platform.color } as CSSProperties}>
-          {platform.kind === "path" ? <BrandMark d={platform.d} label={platform.name} /> : <Image className="marquee-logo" src={platform.logo} alt="" width={24} height={24} />}
-          <span>{platform.name}</span>
-        </span>
-      ))}
+    <div className="platform-flow">
+      <div className="platform-flow-stage">
+        <svg className="platform-flow-svg" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true">
+          {flowRows.map((row, index) => (
+            <g key={row} style={{ "--flow-delay": `${index * 0.12}s` } as CSSProperties}>
+              {/* Left rails and animated signal pulses */}
+              <path className="platform-flow-rail" d={`M 500 200 C 360 200 260 ${row} 140 ${row}`} />
+              <path className="platform-flow-signal" d={`M 500 200 C 360 200 260 ${row} 140 ${row}`} />
+
+              {/* Right rails and animated signal pulses */}
+              <path className="platform-flow-rail" d={`M 500 200 C 640 200 740 ${row} 860 ${row}`} />
+              <path className="platform-flow-signal" d={`M 500 200 C 640 200 740 ${row} 860 ${row}`} />
+            </g>
+          ))}
+        </svg>
+
+        <ul className="platform-flow-column platform-flow-left" aria-label="Job and freelance platforms (left)">
+          {leftPlatforms.map((platform, index) => (
+            <PlatformNode key={platform.name} platform={platform} index={index} />
+          ))}
+        </ul>
+
+        <div className="platform-flow-core" aria-label="Resuma document ready to apply">
+          <div className="platform-core-disc" title="Resuma">
+            <Image
+              className="platform-core-logo"
+              src="/favicon.ico"
+              alt="Resuma"
+              width={48}
+              height={48}
+              unoptimized
+              priority
+            />
+          </div>
+        </div>
+
+        <ul className="platform-flow-column platform-flow-right" aria-label="Job and freelance platforms (right)">
+          {rightPlatforms.map((platform, index) => (
+            <PlatformNode key={platform.name} platform={platform} index={index + 5} />
+          ))}
+        </ul>
+      </div>
+      <p className="platform-flow-caption">Download your PDF, then upload it wherever you apply.</p>
     </div>
   );
 }
@@ -74,44 +127,12 @@ export default function LandingPage() {
         <Link href="/builder" className="landing-header-cta">Create resume <i className="cta-arrow" aria-hidden="true" /></Link>
       </header>
 
-      <section className="landing-introduction" aria-labelledby="landing-title">
-        <div className="landing-hero-content">
-          <h1 id="landing-title">Build a resume that feels<br /><em>clear, capable, and yours.</em></h1>
-          <p>Write in a focused editor, review every change live, and export a polished resume without creating an account.</p>
-          <div className="landing-action-row">
-            <Link href="/builder" className="landing-primary">
-              <span>Start building</span><i className="cta-arrow" aria-hidden="true" />
-            </Link>
-            <div className="landing-proof">
-              <div className="proof-avatars" aria-hidden="true">
-                {AVATARS.map((src) => <Image key={src} src={src} alt="" width={72} height={72} />)}
-              </div>
-              <div className="proof-copy">
-                <div className="proof-stars" aria-label="Five stars">
-                  {Array.from({ length: 5 }).map((_, index) => <Star key={index} />)}
-                </div>
-                <span>Trusted by 1000+ clients</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="landing-logos" aria-label="Platforms you can apply on with your resume">
         <div className="marquee-heading">
           <h2>A resume ready for <em>where you apply.</em></h2>
-          <p>Export one clean PDF for the job platforms you already use.</p>
+          <p>Build and export a polished resume in one place.</p>
         </div>
-        <div className="platform-wall" aria-hidden="true">
-          {[0, 5].map((offset, row) => (
-            <div className={`marquee ${row === 1 ? "marquee-reverse" : ""}`} key={offset}>
-              <div className="marquee-track">
-                <MarqueeGroup hidden offset={offset} />
-                <MarqueeGroup hidden offset={offset} />
-              </div>
-            </div>
-          ))}
-        </div>
+        <PlatformFlow />
       </section>
 
       <section className="landing-showcase" aria-labelledby="showcase-title">
